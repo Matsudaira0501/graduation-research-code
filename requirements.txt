@@ -1,0 +1,17 @@
+beautifulsoup4
+faiss-cpu
+langrila
+networkx
+numpy
+openai
+pandas
+Pillow
+python-dotenv
+pykakasi
+requests
+scikit-learn
+sentence-transformers
+torch
+torchvision
+tqdm
+transformers

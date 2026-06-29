@@ -1,0 +1,45 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# Research data and generated artifacts
+data/
+datasets/
+outputs/
+results/
+models/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.safetensors
+*.npy
+*.npz
+*.pkl
+*.pickle
+*.csv
+*.jsonl
+
+# Images and documents are intentionally kept outside this code repository
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.pdf
+*.pptx
+*.docx
+
+# Editors and operating systems
+.vscode/
+.vs/
+.idea/
+.DS_Store
+Thumbs.db
