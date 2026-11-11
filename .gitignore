@@ -43,3 +43,9 @@ checkpoints/
 .idea/
 .DS_Store
 Thumbs.db
+
+# Local secrets and signing/certificate files
+*.pem
+*.p12
+*.pfx
+*.key
