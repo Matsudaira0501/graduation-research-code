@@ -25,7 +25,7 @@
 
 ## 研究発表・参考情報
 
-- **電子情報通信学会 MVE研究会（2026年3月）**：［発表情報・要旨（MVE2025-56）］(https://ken.ieice.org/ken/paper/20260316Scs3/)  
+- **電子情報通信学会 MVE研究会（2026年3月）**：［発表情報・要旨（MVE2025-56）］(https://ken.ieice.org/ken/paper/20260316Scs3/eng/)  
   「単一画像謎解きに対する類題検索とインコンテキスト学習を用いた解答支援」
 - **2nd Taiwan-Japan Multimedia Seminar（TJMM2026）**：英語ポスター発表「Image Puzzle Solving by In-context Learning of Similar-puzzle」。［名古屋大学の研究業績ページ］(https://www.cs.is.i.nagoya-u.ac.jp/ja/people/hayato-matsudaira/)
 
