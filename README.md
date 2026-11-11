@@ -1,75 +1,114 @@
-# 画像謎解きの類題検索とインコンテキスト学習による解答支援
+# 画像謎解きの解答支援 | 類題検索 × In-Context Learning
 
-学部の卒業研究で作成した、**画像謎解き問題に対する類題検索と大規模言語モデル（LLM）による解答支援**の実験コードです。画像の見た目が似ているだけでは解法が似ているとは限らないことに着目し、検索方法の違いが解答精度に与える影響を比較しました。
+**画像の謎解き問題に対して、解法が似ている類題とその解説をLLMへ提示し、解答精度を改善する**ことを目指した卒業研究の実験コードです。
 
-## 研究の概要
+[研究発表の情報（MVE研究会）](https://ken.ieice.org/ken/index/ieice-techrep-125-411.html) ｜ [研究業績（名古屋大学）](https://www.cs.is.i.nagoya-u.ac.jp/ja/people/hayato-matsudaira/) ｜ [類題提示による解答プログラム](src/nazotoki-fewshot.py)
 
-単一の画像に含まれる文字・図形・配置などから規則を推測して解く「画像謎解き」を対象としています。対象問題だけをLLMに入力する条件と、検索した類題の**画像・解説・答え**を例として提示する条件を比較しました。
+## 研究のポイント
 
-処理の流れ：
+- **課題：** 見た目が似た画像でも、謎の解き方が同じとは限らない
+- **着想：** 対象問題とともに、検索した類題の**画像・解説・正解**をLLMに提示する
+- **工夫：** タグ／キーフレーズ、画像特徴量、マルチモーダル埋め込みなど、異なる基準で類題を検索して比較する
+- **評価：** 61問の画像謎解き問題で、類題提示の有無と検索方法ごとの差を調べる
 
-1. 問題画像・解説・答えをもつデータセット（61問）を用意
-2. タグ・キーフレーズ、画像特徴量、画像と言語の埋め込みなどを用いて類題を検索
-3. 検索した類題とその解説・答えを、対象問題とともにLLMへ提示（In-Context Learning）
-4. 生成した解答を正解データと比較し、検索方法ごとの効果を評価
+### 実験結果（卒業研究時）
 
-## 主な取り組みと結果
-
-- **問題データ：** 61問の画像謎解きについて、画像・解説・正解を整理
-- **類題検索：** 解説・タグに基づく検索、ResNet50・DINOv2などの画像特徴に基づく検索、Qwen-VL系のマルチモーダル埋め込みを用いた検索を検討
-- **解答生成：** OpenAI APIを利用し、類題を例示した条件と例示しない条件を比較
-- **評価：** 類題なしの基準条件では**33/61問（約54%）**が正解。検討した条件では、類題の提示によって正答率を**最大約15ポイント改善**
-- **発表：** 電子情報通信学会MVE研究会で口頭発表し、Taiwan-Japan Multimedia Seminar（TJMM2026）でもポスター発表
-
-数値は卒業研究時の実験結果です。このリポジトリには研究データや実験結果の一式を含めていないため、READMEの数値をそのまま再現できる状態ではありません。
-
-## 研究発表・参考情報
-
-- **電子情報通信学会 MVE研究会（2026年3月）**：［発表情報・要旨（MVE2025-56）］(https://ken.ieice.org/ken/paper/20260316Scs3/eng/)  
-  「単一画像謎解きに対する類題検索とインコンテキスト学習を用いた解答支援」
-- **2nd Taiwan-Japan Multimedia Seminar（TJMM2026）**：英語ポスター発表「Image Puzzle Solving by In-context Learning of Similar-puzzle」。［名古屋大学の研究業績ページ］(https://www.cs.is.i.nagoya-u.ac.jp/ja/people/hayato-matsudaira/)
-
-これらは発表の記録・要旨へのリンクであり、発表スライドや研究データの公開リンクではありません。
-
-## コードの構成
-
-| パス | 主な役割 |
+| 条件・指標 | 結果 |
 | --- | --- |
-| [src/nazotoki.py](src/nazotoki.py) | 類題を提示しない画像謎解きの解答実験 |
-| [src/nazotoki-fewshot.py](src/nazotoki-fewshot.py) | 類題・解説・答えを提示する解答実験 |
-| [src/image_similar.py](src/image_similar.py) | ResNet50、ViT、DINOv2による画像特徴抽出と類似度計算 |
-| [src/explanation_keyphrases.py](src/explanation_keyphrases.py) | 解説文からのキーフレーズ抽出 |
-| [src/build_index_qwenvl.py](src/build_index_qwenvl.py) | 画像・言語埋め込みの索引作成 |
-| [src/search_qwenvl.py](src/search_qwenvl.py) | 埋め込みに基づく類題検索 |
-| [src/seigohantei.py](src/seigohantei.py) | 解答結果の評価に関する処理 |
-| [experiments/](experiments/) | 検索手法の比較・評価、試行用スクリプト |
-| [tools/](tools/) | 独立した画像類似度計算などの補助ツール |
+| データセット | 画像謎解き61問 |
+| 類題を提示しない基準条件 | **33/61問正解（約54%）** |
+| 類題提示による改善 | **最大約15ポイント** |
 
-※このリポジトリは卒業研究時の複数の実験スクリプトを整理したものです。すべてを単一のコマンドで実行する構成ではありません。
+結果は研究時の評価によるもので、**すべての検索方法で改善したことを意味しません**。また、研究データ・当時の全実験設定・生成結果一式は公開していないため、このREADMEのみで数値を再現できる状態ではありません。
+
+## 処理の流れ
+
+```text
+対象の画像謎解き問題
+         │
+         ├── 類題検索 ─────────────────────────┐
+         │   ・解説のキーフレーズ／タグ          │
+         │   ・画像特徴（ResNet50、DINOv2等）    │
+         │   ・画像・言語の埋め込み（Qwen-VL系）  │
+         │                                     ▼
+         └──────────────────→ 類題の画像・解説・答え
+                                               │
+                                               ▼
+                               対象画像と一緒にLLMへ入力
+                                               │
+                                               ▼
+                                     生成された解答
+                                               │
+                                               ▼
+                                    正解データとの比較
+```
+
+画像の類似性だけでなく、**解法の類似性をどう検索結果へ反映させるか**を検討した点が本研究の中心です。
+
+## 主な実装
+
+| コード | 役割 |
+| --- | --- |
+| [src/nazotoki.py](src/nazotoki.py) | 類題を提示しない基準実験 |
+| [src/nazotoki-fewshot.py](src/nazotoki-fewshot.py) | 類題の画像・解説・答えを提示する解答実験 |
+| [src/image_similar.py](src/image_similar.py) | ResNet50、ViT、DINOv2による特徴抽出・画像類似度 |
+| [src/explanation_keyphrases.py](src/explanation_keyphrases.py) | 解説文からのキーフレーズ抽出 |
+| [src/build_index_qwenvl.py](src/build_index_qwenvl.py) / [src/search_qwenvl.py](src/search_qwenvl.py) | 埋め込みによる索引作成・検索 |
+| [src/seigohantei.py](src/seigohantei.py) | 正誤評価に関する処理 |
+| [experiments/](experiments/) | 比較・評価用の実験スクリプト |
+| [tools/](tools/) | 独立した補助ツール |
+
+研究過程の複数の実験スクリプトを整理したコード集であり、単一コマンドで全処理を再現する構成ではありません。
 
 ## 使用技術
 
-- 言語：Python
-- 解答生成：OpenAI API（研究時にはGPT-5.1を使用）
-- 画像特徴：PyTorch、torchvision、ResNet50、DINOv2など
-- マルチモーダル検索：Qwen-VL系の埋め込み、FAISSなど
-- テキスト処理・分析：キーフレーズ抽出、pandas、scikit-learnなど
+**Python / OpenAI API（研究時にGPT-5.1を使用） / PyTorch / torchvision / ResNet50 / DINOv2 / Qwen-VL系の埋め込み / FAISS / pandas / scikit-learn** など。
 
-## セットアップ
+## セットアップと実行の例
 
-Python 3.10以降を推奨します。仮想環境を作成し、依存パッケージをインストールしてください。
+Python 3.10以降を推奨します。
 
 ```bash
-python -m venv .venv
+git clone https://github.com/Matsudaira0501/graduation-research-code.git
+cd graduation-research-code
 python -m pip install -r requirements.txt
 ```
 
-OpenAI APIを利用する処理では、APIキーをソースコードに書き込まず、環境変数 `OPENAI_API_KEY` に設定してください。
+OpenAI APIを使用する場合は、**APIキーをコードへ直接書かず**、環境変数 `OPENAI_API_KEY` を設定してください（[.env.example](.env.example) 参照）。
 
-一部の実験では、`requirements.txt` 以外に `pke` や `keyphrase_extractors` などのパッケージ、事前学習モデル、追加データが必要です。また、OpenAI APIの呼び出しには利用料金が発生する場合があります。
+類題提示による実験の呼び出し例：
 
-## データと再現性について
+```bash
+python src/nazotoki-fewshot.py \
+  --dir /path/to/images \
+  --similar /path/to/similar.csv \
+  --answer /path/to/answer.csv \
+  --kaisetu /path/to/kaisetu.csv \
+  --model gpt-5.1 \
+  --out results_fewshot.csv
+```
 
-著作権・プライバシー・容量上の理由から、問題画像、解説・正解データ、生成結果、学習済みモデルなどは含めていません。実行には、各スクリプトが想定する形式の入力データを別途用意し、パスや設定を調整する必要があります。
+- `--dir`：数値IDを含むファイル名の問題画像を置いたフォルダ
+- `--similar`：`query` と `neighbor1` 列を持つ類題対応CSV
+- `--answer` / `--kaisetu`：問題ID順の正解・解説CSV（それぞれヘッダーなし・1列）
+- `--out`：解答結果の出力先CSV
 
-**研究上のポイント：** 単にLLMへ類題を与えるのではなく、どのような検索基準で例題を選ぶと解答に役立つかを、複数手法の比較と正誤評価によって検証した点です。
+**この実行例は必要な引数を示すものであり、入力データを別途用意する必要があります。** 一部スクリプトでは追加パッケージ（例：`pke`、`keyphrase_extractors`）、モデル重みや個別の設定変更も必要です。APIの利用料金にも注意してください。
+
+## 学会・セミナーでの発表
+
+- **電子情報通信学会 MVE研究会（2026年3月、口頭発表）**  
+  「単一画像謎解きに対する類題検索とインコンテキスト学習を用いた解答支援」  
+  技術研究報告 **MVE2025-56**（[掲載号の発表一覧](https://ken.ieice.org/ken/index/ieice-techrep-125-411.html)）
+- **2nd Taiwan-Japan Multimedia Seminar（TJMM2026、英語ポスター発表）**  
+  “Image Puzzle Solving by In-context Learning of Similar-puzzle” （[研究業績の掲載ページ](https://www.cs.is.i.nagoya-u.ac.jp/ja/people/hayato-matsudaira/)）
+
+上記のリンクは発表実績の確認用です。発表スライド・ポスター・データセットを、このリポジトリ内で配布しているわけではありません。
+
+## データ公開について
+
+問題画像、解説・正解データ、生成結果、学習済みモデルなどは、著作権・プライバシー・容量の都合により含めていません。公開されているコードと研究実験の全データは区別してください。
+
+---
+
+関連作品：[Unity / C#：2Dアクションゲーム（ブラウザでプレイ可）](https://github.com/Matsudaira0501/2Dgame)
